@@ -193,19 +193,19 @@ Currently this uses the same instruments for every song. I don’t know enough a
 
 This is used only during a ‘scene’ event to determine which of the Noble Engine transitions to use, with each corresponding exactly to a Noble Engine transition.
 
-Listed here for ease of reference the options are: 
-
-CUT
-CROSS_DISSOLVE
-DIP_TO_WHITE
-DIP_WIDGET_SATCHEL
-DIP_METRO_NEXUS
-SLIDE_OFF_LEFT
-SLIDE_OFF_RIGHT
-SLIDE_OFF_UP
-SLIDE_OFF_DOWN
-DIP_TO_BLACK
-
+Listed here for ease of reference the options are:  
+  
+CUT  
+CROSS_DISSOLVE  
+DIP_TO_WHITE  
+DIP_WIDGET_SATCHEL  
+DIP_METRO_NEXUS  
+SLIDE_OFF_LEFT  
+SLIDE_OFF_RIGHT  
+SLIDE_OFF_UP  
+SLIDE_OFF_DOWN  
+DIP_TO_BLACK  
+  
 If transition is not set or a value other than those presented is entered, it will default to DIP_TO_BLACK.
 
 ---
@@ -253,15 +253,15 @@ The overlay is removed on moving to the next entry.
 ---
 ### loadgame
 
-This loads the game. Best used as an option on the title screen leading to an entry set up as follows:
-
-"loadgame": {
-    "eventtype": "dialogue",
-    "autoadvance": "1",
-    "nosave": "yes",
-    "loadgame": "yes"
-   },
-
+This loads the game. Best used as an option on the title screen leading to an entry set up as follows:  
+  
+"loadgame": {  
+    "eventtype": "dialogue",  
+    "autoadvance": "1",  
+    "nosave": "yes",  
+    "loadgame": "yes"  
+   },  
+  
 This will load the position the player left the game at and resume from there. It only accepts the value ‘yes’.
 
 ---
@@ -366,18 +366,18 @@ setvariables: menu1:0|menu2:0|playername:Gavin
 
 As noted, variables like this can be used for any field, and multiple variables can be used in one field. However, the number after the \~ at the start of the variable name and before the \~ at the end of the variable name must increase by one for each variable used in one field.
 
-An example entry to demonstrate this:
-
-  "7": {
-     "eventtype": "dialogue",
-     "content": "Hello there \~1playername1\~. I’ve never met anyone from \~2hometown2\~ before.",
-     "whospeaking": "Trickle",
-     "middlepeep": "\~1trickleforwards1\~",
-     "middlepeeptalking": "\~1trickleforwardst1\~",
-     "background": "basic_room",
-     "goto": "9",
-   },
-
+An example entry to demonstrate this:  
+  
+  "7": {  
+     "eventtype": "dialogue",  
+     "content": "Hello there \~1playername1\~. I’ve never met anyone from \~2hometown2\~ before.",  
+     "whospeaking": "Trickle",  
+     "middlepeep": "\~1trickleforwards1\~",  
+     "middlepeeptalking": "\~1trickleforwardst1\~",  
+     "background": "basic_room",  
+     "goto": "9",  
+   },  
+  
 Note how the number increases when two variables are used in the content line, but later entries start from 1 again.
 
 ---
