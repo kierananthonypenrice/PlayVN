@@ -29,24 +29,20 @@ Download the latest version of noble engine's project template.
 https://github.com/NobleRobot/NobleEngine-ProjectTemplate 
 
 
-### Step 5: 
-Create a folder for your project on your PC.
-
-
-### Step 6:
-Extract the Noble Engine project template into the project folder.
+### Step 5:
+Extract the Noble Engine project template zip somewhere convenient. This will make your project folder, currently called 'NobleEngine-ProjectTemplate-main', but maybe rename that into something like 'My Playdate Project', as otherwise it can get a bit confusing.
 
 
 ### Step 7:
-Extract the Noble Engine zip into the /source/libraries/noble/ folder in your project folder.
+Extract the files in the NobleEngine-Main folder in the Noble Engine zip file into the /source/libraries/noble/ folder in your project folder.
 
 
 ### Step 8:
-Extract PlayVN into the folder, overwriting any files you are prompted to.
+Extract PlayVN into the folder, overwriting any files you are prompted to (should be just main.lua).
 
 
 ### Step 9:
-Download the latest version of Visual Studio Code and install it
+Download the latest version of Visual Studio Code and install it.
 
 
 ### Step 10: 
