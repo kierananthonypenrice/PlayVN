@@ -297,6 +297,18 @@ These fields are used to display a ‘talking’ animation whilst the dialogue o
 Unlike the previous fields, these fields need to be included every time they are to be used. This is to prevent characters ‘speaking’ when it is another peep’s turn to talk.
 
 ---
+### leftpeepflip, middlepeepflip, rightpeepflip
+
+You can use these to easily flip characters, in case they need to face the other direction. Saves space! Just put the correct field and add the value 'yes'.
+
+---
+### leftpeepoffset, middlepeepoffset, rightpeepoffset
+
+This lets you position the peeps horizontally. By default left peep is at 100, middle peep at 200, and right peep at 300 (you can see these in the init function for your game, or the PlayVNDemo.lua if you haven't renamed it).
+
+To change these offsets, put the field corresponding to the peep you want to move, then put the X value you want to change their offset to. This will be the *center* of your peep. This remains at this setting until changed, so bear that in mind.
+
+---
 ### whichpeep
 
 To help the user identify which character is speaking in a scene, you can use this field to make that character sprite ‘jump up’ 10 pixels for the duration of an entry.
