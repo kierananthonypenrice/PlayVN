@@ -1,0 +1,522 @@
+[
+  {
+   "title1": {
+     "eventtype": "dialogue",
+     "background": "playvndemo",
+     "middlepeep" : "",
+     "function": "setConstants",
+     "nosave": "yes",
+     "goto": "titlemenu"
+   },
+   "titlemenu": {
+    "eventtype": "menu",
+    "content": "Continue|New demo",
+    "nosave": "yes",
+    "goto": "loadgamet|titlemenut"
+   },
+   "loadgamet":{
+    "transition": "DIP_TO_BLACK",
+    "nosave": "yes",
+    "duration": "1.0",
+    "eventtype": "scene",
+    "goto": "loadgame1"
+  },
+  "loadgame1": {
+    "eventtype": "dialogue",
+    "nosave": "yes",
+    "background": "blackscreen",
+    "goto": "loadgame"
+   },
+   "loadgame": {
+    "eventtype": "dialogue",
+    "autoadvance": "1",
+    "nosave": "yes",
+    "loadgame": "yes"
+   },    
+   "titlemenut":{
+     "transition": "SLIDE_OFF_UP",
+     "nosave": "yes",
+     "duration": "1.0",
+     "eventtype": "scene",
+     "goto": "1"
+   },
+   "1": {
+    "eventtype": "dialogue",
+    "content": "Hi there! Welcome to the Demo of PlayVN!",
+    "whospeaking": "Trickle",
+    "middlepeep": "~1trickleforwards1~",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "background": "basic_room",
+    "goto": "2",
+    "bgmidi": "Determinedmidi.mid"
+   },
+   "2": {
+    "eventtype": "dialogue",
+    "content": "I am here to take you through the various features of PlayVN!",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "3"
+   },
+   "3": {
+    "eventtype": "dialogue",
+    "content": "You may find it helpful to have 'PlayVNDemo.json',",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "3a"
+   },
+   "3a": {
+    "eventtype": "dialogue",
+    "content": "found in the source/assets/json folder, open during this demo,",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "4"
+   },
+   "4": {
+    "eventtype": "dialogue",
+    "content": "as I will refer to certain things as we go along",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "4a"
+   },
+   "4a": {
+    "eventtype": "dialogue",
+    "content": "and you will be able to see how they are implemented!",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "5"
+   },
+   "5": {
+    "eventtype": "dialogue",
+    "content": "First of all, let me introduce myself.",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "5a"
+   },
+   "5a": {
+    "eventtype": "dialogue",
+    "content": "My name is Trickle, as you can see in the name tag on this dialogue box!",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "6"
+   },
+   "6": {
+    "eventtype": "dialogue",
+    "content": "This is defined by the 'whospeaking' field in each event!",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "7"
+   },
+   "7": {
+    "eventtype": "dialogue",
+    "content": "Likewise, the 'eventtype' field determines that we are in 'dialogue' right now,",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "7a"
+   },
+   "7a": {
+    "eventtype": "dialogue",
+    "content": "using the text in the 'content' field!",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "8"
+   },
+   "8": {
+    "eventtype": "dialogue",
+    "content": "Please note that the 'dialogue' eventtype does not require any text to be included...",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "8a"
+   },
+   "8a": {
+    "eventtype": "dialogue",
+    "content": "...as I will now demonstrate!",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "9"
+   },
+   "9": {
+    "eventtype": "dialogue",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "10"
+   },
+   "10": {
+    "eventtype": "dialogue",
+    "content": "Sometimes a bit of quiet is nice, isn't it?",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "11"
+   },
+   "11": {
+    "eventtype": "dialogue",
+    "content": "You can also see in event 1 we defined several other aspects of what you're currently seeing.",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "12"
+   },
+   "12": {
+    "eventtype": "dialogue",
+    "content": "The background is set by the... background field! Let's see how that works.",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "13"
+   },
+   "13": {
+    "eventtype": "dialogue",
+    "background": "north_pole",
+    "content": "There we go! It's really that simple!",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "14"
+   },
+   "14": {
+    "eventtype": "dialogue",
+    "content": "We also defined the background music using 'bgmidi', and put me in the 'middlepeep' spot.",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "15"
+   },
+   "15": {
+    "eventtype": "dialogue",
+    "content": "You may notice that whilst we defined both 'middlepeep', the middle character spot,",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "16"
+   },
+   "16": {
+    "eventtype": "dialogue",
+    "content": "and 'middlespeeptalking' we are re-including middlepeeptalking on each event.",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "17"
+   },
+   "17": {
+    "eventtype": "dialogue",
+    "content": "That is because though I am here for every event,",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "17a"
+   },
+   "17a": {
+    "eventtype": "dialogue",
+    "content": "I probably won't need to be talking for every single one. Isn't that right, omniscient narrator?",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "18"
+   },
+   "18": {
+    "eventtype": "dialogue",
+    "content": "Don't bring me into this just to demonstrate dialogue where your lips don't move!",
+    "whospeaking": "Omniscient Narrator",
+    "goto": "19"
+   },
+   "19": {
+    "eventtype": "dialogue",
+    "content": "He's a sweetheart, isn't he? Now, what if we want to have more than one person in the scene?",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "20"
+   },
+   "20": {
+    "eventtype": "dialogue",
+    "content": "Let me just shuffle over here a sec",
+    "whospeaking": "Trickle",
+    "middlepeep": "",
+    "rightpeep": "~1trickleforwards1~",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "21"
+   },
+   "21": {
+    "eventtype": "dialogue",
+    "content": "And bring in a friend...",
+    "whospeaking": "Trickle",
+    "leftpeep": "~1rizzleshocked1~",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "22"
+   },
+   "22": {
+    "eventtype": "dialogue",
+    "content": "Well now, this will get confusing.",
+    "whospeaking": "Rizzle",
+    "leftpeeptalking": "~1rizzleshockedt1~",
+    "goto": "23"
+   },
+   "23": {
+    "eventtype": "dialogue",
+    "content": "Okay, then it is time to start using the 'whichpeep' field!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "24"
+   },
+   "24": {
+    "eventtype": "dialogue",
+    "content": "This will make us pop up a little when it is our turn to speak!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "25"
+   },
+   "25": {
+    "eventtype": "dialogue",
+    "content": "What else can we demonstrate? I think that's about it isn't it?",
+    "whospeaking": "Rizzle",
+    "whichpeep": "left",
+    "leftpeep": "~1rizzlepensive1~",
+    "leftpeeptalking": "~1rizzlepensivet1~",
+    "goto": "26"
+   },
+   "26": {
+    "eventtype": "dialogue",
+    "overlay": "~1objection1~",
+    "leftpeep": "~1rizzleshocked1~",
+    "sfx": "objection",
+    "goto": "27"
+   },
+   "27": {
+    "eventtype": "dialogue",
+    "content": "Hardly, Rizzle! We just demonstrated TWO new features right there!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "28"
+   },
+   "28": {
+    "eventtype": "dialogue",
+    "content": "First up, an overlay!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "28a"
+   },
+   "28a": {
+    "eventtype": "dialogue",
+    "content": "These appear in front of characters and backgrounds, and are defined by the 'overlay' field.",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "29"
+   },
+   "29": {
+    "eventtype": "dialogue",
+    "content": "Plus, of course, that neat sound effect. Sound effects use the 'sfx' field and play only once.",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "30"
+   },
+   "30": {
+    "eventtype": "dialogue",
+    "content": "Isn't that cool?",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "31"
+   },
+   "31": {
+    "eventtype": "menu",
+    "content": "Just the BEST!|Borrrring",   
+    "goto": "32|33"
+   },
+   "32": {
+    "eventtype": "dialogue",
+    "content": "I know, right?! We have loads of other cool features too.",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "34"
+   },
+   "33": {
+    "eventtype": "dialogue",
+    "content": "Didn't impress you, huh? Well we have loads of other cool features too.",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "34"
+   },
+   "34": {
+    "eventtype": "dialogue",
+    "content": "Like that menu that just appeared. Did you see how simple it was to add it?",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "35"
+   },
+   "35": {
+    "eventtype": "dialogue",
+    "content": "But can those options be variables?",
+    "whospeaking": "Rizzle",
+    "whichpeep": "left",
+    "leftpeep": "~1rizzlepensive1~",
+    "leftpeeptalking": "~1rizzlepensivet1~",
+    "goto": "36"
+   },
+   "36": {
+    "eventtype": "dialogue",
+    "content": "Great question, Rizzle. Yes they can! That way you can make dialogue trees!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "37"
+   },
+   "37": {
+    "eventtype": "dialogue",
+    "setvariables": "inventory:inventory1",
+    "content": "We can also use variables to create an inventory page! I just enabled it!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "37a"
+   },
+   "37a": {
+    "eventtype": "dialogue",
+    "content": "Try pressing B now!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "38"
+   },
+   "inventory1":{
+    "eventtype": "inspect",
+    "background": "inventory1",
+    "leftpeep": "",
+    "middlepeep": "",
+    "rightpeep": "",
+    "locations": "12:30:68:68:inventorytrickle|234:30:48:48:inventoryshell",
+    "nosave": "yes"
+   },
+   "inventorytrickle":{
+    "eventtype": "dialogue",
+    "content": "The items here are defined by the 'locations' field in the 'inventory1' event.",
+    "nosave": "yes",
+    "goto": "~1inventory1~"
+   },
+   "inventoryshell":{
+    "eventtype": "dialogue",
+    "content": "This is an 'inspect' event type. It lets players navigate their environment!",
+    "nosave": "yes",
+    "goto": "inventoryshell2"
+   },
+   "inventoryshell2":{
+    "eventtype": "dialogue",
+    "content": "Press B again to exit the inventory when you are ready.",
+    "nosave": "yes",
+    "goto": "~1inventory1~"
+   },
+   "38": {
+    "eventtype": "dialogue",
+    "content": "There are even more features than this in the documentation, make sure you read all of it!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "39"
+   },
+   "39": {
+    "eventtype": "dialogue",
+    "content": "But is it really that quick to use? It seems complex.",
+    "whospeaking": "Rizzle",
+    "whichpeep": "left",
+    "leftpeeptalking": "~1rizzlepensivet1~",
+    "goto": "40"
+   },
+   "40": {
+    "eventtype": "dialogue",
+    "content": "Honestly once you get the hang of it you will be shocked with the speed you can make things in it!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "41"
+   },
+   "41": {
+    "eventtype": "dialogue",
+    "content": "I started making this demo at 9pm. I finished it before 11pm the same day!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "42"
+   },
+   "42": {
+    "eventtype": "dialogue",
+    "content": "Including making the new title screen from scratch! (Photopea.com! Use it!)",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "43"
+   },
+   "43": {
+    "eventtype": "dialogue",
+    "content": "But of course, we are forgetting the most important part of this whole thing!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "44"
+   },
+   "44": {
+    "eventtype": "dialogue",
+    "content": "As this is a plugin for Noble engine, you can use noble engine's transitions! Let's try one now!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "rightpeeptalking": "~1trickleforwardst1~",
+    "goto": "45"
+   },
+   "45":{
+    "transition": "DIP_TO_BLACK",
+    "duration": "1.0",
+    "eventtype": "scene",
+    "goto": "46"
+   },
+   "46": {
+    "eventtype": "dialogue",
+    "content": "Oh good, back to just me and you again!",
+    "whospeaking": "Trickle",
+    "leftpeep": "",
+    "middlepeep": "~1trickleforwards1~",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "rightpeep": "",
+    "background": "basic_room",
+    "goto": "47"
+   },
+   "47": {
+    "eventtype": "dialogue",
+    "content": "See how easy that was? The scene event type makes switching between events super smooth!",
+    "whospeaking": "Trickle",
+    "whichpeep": "right",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "48"
+   },
+   "48": {
+    "eventtype": "dialogue",
+    "content": "Plus all the Noble Engine transitions are available to us.",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "49"
+   },
+   "49": {
+    "eventtype": "dialogue",
+    "content": "We can also transition between Noble Engine scenes,",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "49a"
+   },
+   "49a": {
+    "eventtype": "dialogue",
+    "content": "so you can use PlayVN as part of a bigger project!",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "50"
+   },
+   "50": {
+    "eventtype": "dialogue",
+    "content": "I hope this was helpful. Enjoy PlayVN!",
+    "whospeaking": "Trickle",
+    "middlepeeptalking": "~1trickleforwardst1~",
+    "goto": "title1t"
+   },
+   "title1t":{
+    "transition": "SLIDE_OFF_UP",
+    "nosave": "yes",
+    "duration": "1.0",
+    "eventtype": "scene",
+    "goto": "title1"
+   }
+  }
+]
