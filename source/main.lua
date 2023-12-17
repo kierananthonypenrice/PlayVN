@@ -40,6 +40,12 @@ Noble.GameData.setup(
 	true
 )
 
+leftpeepoffset = 0		
+middlepeepoffset = 200		
+rightpeepoffset = 400
+pressastate = 1
+savetemp = {}
+
 Noble.showFPS = false
 
 Noble.new(PlayVNDemo, 1.5, Noble.TransitionType.CROSS_DISSOLVE)
