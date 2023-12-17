@@ -48,4 +48,4 @@ savetemp = {}
 
 Noble.showFPS = false
 
-Noble.new(PlayVNDemo, 1.5, Noble.TransitionType.CROSS_DISSOLVE)
+Noble.new(PlayVNDemo, 1.5, Noble.Transition.CrossDissolve)
