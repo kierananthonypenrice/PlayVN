@@ -386,25 +386,25 @@ function changeScene()
 		PVNtoscene = thisscenename
 	end
 	if line["transition"] == "CUT" then
-		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.CUT)
+		Noble.transition(_G[PVNtoscene], thisduration, Noble.Transition.Cut)
 	elseif line["transition"] == "CROSS_DISSOLVE" then
-		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.CROSS_DISSOLVE)
+		Noble.transition(_G[PVNtoscene], thisduration, Noble.Transition.CrossDissolve)
 	elseif line["transition"] == "DIP_TO_WHITE" then
-		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.DIP_TO_WHITE)
+		Noble.transition(_G[PVNtoscene], thisduration, Noble.Transition.DipToWhite)
 	elseif line["transition"] == "DIP_WIDGET_SATCHEL" then
-		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.DIP_WIDGET_SATCHEL)
+		Noble.transition(_G[PVNtoscene], thisduration, Noble.Transition.WidgetSatchel)
 	elseif line["transition"] == "DIP_METRO_NEXUS" then
-		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.DIP_METRO_NEXUS)
+		Noble.transition(_G[PVNtoscene], thisduration, Noble.Transition.MetroNexus)
 	elseif line["transition"] == "SLIDE_OFF_LEFT" then
-		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.SLIDE_OFF_LEFT)
+		Noble.transition(_G[PVNtoscene], thisduration, Noble.Transition.SlideOffLeft)
 	elseif line["transition"] == "SLIDE_OFF_RIGHT" then
-		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.SLIDE_OFF_RIGHT)
+		Noble.transition(_G[PVNtoscene], thisduration, Noble.Transition.SlideOffRight)
 	elseif line["transition"] == "SLIDE_OFF_UP" then
-		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.SLIDE_OFF_UP)
+		Noble.transition(_G[PVNtoscene], thisduration, Noble.Transition.SlideOffUp)
 	elseif line["transition"] == "SLIDE_OFF_DOWN" then
-		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.SLIDE_OFF_DOWN)
+		Noble.transition(_G[PVNtoscene], thisduration, Noble.Transition.SlideOffDown)
 	else
-		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.DIP_TO_BLACK)
+		Noble.transition(_G[PVNtoscene], thisduration, Noble.Transition.DipToBlack)
 	end
 end
 
@@ -1074,3 +1074,5 @@ function checkMenuStuff()
 		gridviewSprite:setZIndex(999)
 	end
 end
+
+
