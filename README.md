@@ -20,7 +20,7 @@ Download PlayVN
 
 
 ### Step 3:
-Download the latest version of noble engine.  
+Download the latest version of noble engine. PlayVN has now been updated to run happily with the latest version of Noble Engine as of 17/12/2023. 
 https://github.com/NobleRobot/NobleEngine 
 
 
@@ -105,7 +105,7 @@ You can also change the font, should you wish. To do so, add the font to the /so
 
 Remove the two dashes at the front and replace the REPLACETHISPART section with the name of your .fnt file, but without the .fnt extension.
 
-PLEASE NOTE: I have not done *ANY* testing with this function and it may produce unpredictable results.
+PLEASE NOTE: I have not done *ANY* testing with this function, as it is not used in my game, and as such it may produce unpredictable results.
 
 
 ## Features
