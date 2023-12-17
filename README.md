@@ -7,6 +7,26 @@ A visual novel development plugin for Noble Engine.
 
 PlayVN is a visual novel engine for the Panic Playdate designed to be as easy to use as possible. After completing the simple installation steps in this guide the entire game can be created by editing a single .json file in a fashion that should be easy to understand for those not familiar with programming. This was the guiding principle in creating this system: to make a visual novel engine that is very easy to use, but covers as many possible features of a visual novel as possible so as not to reduce functionality. In addition, the system is a plugin for the fantastic Noble Engine, so it can be easily integrated with other scenes to make the visual novel element just a part of your game.
 
+This engine was always intended to be free for the community to use, edit, extend, and mess with, so I'm presenting it here.
+
+Things this engine offers:
+
+Scrolling dialogue boxes that type out the text, with character names.
+Animated characters, backgrounds, foregrounds, and overlays.
+Optional talking animations that only play whilst text is being printed.
+MP3 and midi music
+Sound effects
+Scene transitions
+Variables which can be used almost anywhere
+Save games (currently just the one slot, sorry RobKohr)
+Inventory system
+Dialogue menus (optionally crank to select!)
+Inspect the background sections, like investigation sections in Ace Attorney
+Three spots for characters
+Characters can optionally 'pop up' whilst speaking
+The ability to temporarily disable buttons, and to autoadvance scenes after specified durations.
+The ability to create your own custom functions that can be called in the JSON file to do whatever you want!
+
 
 ## Installation Instructions
 
