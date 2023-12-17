@@ -11,21 +11,21 @@ This engine was always intended to be free for the community to use, edit, exten
 
 Things this engine offers:
 
-Scrolling dialogue boxes that type out the text, with character names.
-Animated characters, backgrounds, foregrounds, and overlays.
-Optional talking animations that only play whilst text is being printed.
-MP3 and midi music
-Sound effects
-Scene transitions
-Variables which can be used almost anywhere
-Save games (currently just the one slot, sorry RobKohr)
-Inventory system
-Dialogue menus (optionally crank to select!)
-Inspect the background sections, like investigation sections in Ace Attorney
-Three spots for characters
-Characters can optionally 'pop up' whilst speaking
-The ability to temporarily disable buttons, and to autoadvance scenes after specified durations.
-The ability to create your own custom functions that can be called in the JSON file to do whatever you want!
+Scrolling dialogue boxes that type out the text, with character names.  
+Animated characters, backgrounds, foregrounds, and overlays.  
+Optional talking animations that only play whilst text is being printed.  
+MP3 and midi music  
+Sound effects  
+Scene transitions  
+Variables which can be used almost anywhere  
+Save games (currently just the one slot)  
+Inventory system  
+Dialogue menus (optionally crank to select!)  
+Inspect the background sections, like investigation sections in Ace Attorney  
+Three spots for characters  
+Characters can optionally 'pop up' whilst speaking  
+The ability to temporarily disable buttons, and to autoadvance scenes after specified durations.  
+The ability to create your own custom functions that can be called in the JSON file to do whatever you want!  
 
 
 ## Installation Instructions
