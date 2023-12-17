@@ -92,12 +92,10 @@ end
 
 function onPressB()
     if isininventory ~= nil then
-        line["loadgame"] = "yes"
-        print(dump(line))
+        line["loadgame"] = "inventory"
         isininventory = nil
     else
         if vnvariables["inventory"]~=nil then
-            saveData("gdline", vnvariables["inventory"])
 	        line = deepcopy(db[vnvariables["inventory"]])
             isininventory = "yes"
         end
