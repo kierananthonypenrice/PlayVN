@@ -19,50 +19,102 @@ function replace_char(pos, str, r)
 end
 
 function createTextbox()
-	if textbox ~= nil then textbox:remove() end
+	-- now let's put together the textbox sprite
 	if (line["content"]~=nil)then
-		textbox = Graphics.sprite.new()
+		if textbox == nil then
+			textbox = Graphics.sprite.new()
+		end
 		textbox:setSize(400, 60)
 		textbox:setCenter(0,0)
 		textbox:moveTo(0, 190)
 		textbox:setZIndex(998)
-		textbox.text = ""
-		textbox.currentChar = 1
-		textbox.currentText = ""
-		textbox.typing = true
+		textbox.text = "" -- this is blank for now; we can set it at any point
+		textbox.currentChar = 1 -- Start the current character as the first one
+		textbox.next40 = 40 -- the next point at which we will pause is 40 characters, the starting amount
+		textbox.paused = false -- we are not currently pausing the text box
+		textbox.currentText = "" -- Currently the text to print is blank
+		textbox.typing = true -- we are starting typing
 
-		function textbox:update()
-			self.currentChar = self.currentChar + 1
-			if self.currentChar > #self.text then
-				self.currentChar = #self.text
+		-- this function will calculate the string to be used. 
+		-- it won't actually draw it; the following draw() function will.
+		function textbox:update() -- This runs every update on the text box, I guess?
+			if self.paused or (self.typing==false) then
+				if pressastate >= 30 then pressastate = 0 end
+				pressastate = pressastate + 1
+				if pressastate < 15 then
+					pressapic = Graphics.image.new("assets/images/pressa")
+				elseif pressastate < 30 then
+					pressapic = Graphics.image.new("assets/images/pressa2")
+				end
+				if pressa == nil then
+					pressa = Graphics.sprite.new(pressapic)
+				else
+					pressa:setImage(pressapic)
+				end
+				pressa:setCenter(0, 0)
+				pressa:moveTo(377, 219)
+				pressa:setZIndex(999)
+				pressa:add()
+			else
+				if pressa~=nil then
+					pressa:remove()
+				end
+				self.currentChar = self.currentChar + 1 -- increase currentchar by one
+				if self.currentChar > #self.text then -- if currentchar is bigger than the length of the text string, instead keep currentchar at the length of the text string
+					self.currentChar = #self.text
+				end
+				if self.typing and self.currentChar <= #self.text then -- if we are still typing and currentchar is less than, or equal to the length of the text string...
+					textbox.currentText = string.sub(self.text, 1, self.currentChar) -- set the textbox.currentText to be the amount of characters from the text string defined by currentChar
+					textbox.nextText = string.sub(self.text, 1, (self.currentChar + 1))
+					self:markDirty() -- this tells the sprite that it needs to redraw
+				end
+				-- end typing
+				if self.currentChar == #self.text then -- if currentchar is the same length as the text string, then...
+					self.currentChar = 1 -- reset currentchar to 1 ready for the next time and...
+					self.next40 = 40
+					self.typing = false -- mark that we have stopped typing so we stop running this update.
+				end	
 			end
-			if self.typing and self.currentChar <= #self.text then
-				textbox.currentText = string.sub(self.text, 1, self.currentChar)
-				self:markDirty()
-			end
-			if self.currentChar == #self.text then
-				self.currentChar = 1
-				self.typing = false
-			end	
 		end
 
+		-- this function defines how the textbox is drawn and then writes the text into it. The actual text that will be written in is defined further down.
 		function textbox:draw()
 			Graphics.pushContext()
-				Graphics.setColor(Graphics.kColorWhite)
-				Graphics.fillRect(0,0,400,60)
-				Graphics.setLineWidth(4)
-				Graphics.setColor(Graphics.kColorBlack)
-				Graphics.drawRect(0,0,400,60)
-				Graphics.drawTextInRect(self.currentText, 10, 10, 380, 40)
+			-- draw the box				
+			Graphics.setColor(Graphics.kColorWhite)
+			Graphics.fillRect(0,0,400,60)
+			-- border
+			Graphics.setLineWidth(4)
+			Graphics.setColor(Graphics.kColorBlack)
+			Graphics.drawRect(0,0,400,60)
+			-- draw the text!
+			local textYpos = 10 -- the text's starting position, 10px down from the top of the box
+			local currentTextWidth, currentTextHeight = Graphics.getTextSize(self.currentText) -- get the height of the current text box
+			local nextTextWidth, nextTextHeight = Graphics.getTextSize(self.nextText) -- get the height of the NEXT text box
+			if currentTextHeight > 40 then -- is the current text bigger than the height of the text box (40px or two rows of 20px)? if so then
+				textYpos = textYpos - (currentTextHeight - 40) -- set the position of the text as the starting text position (10px) minus 40 LESS than the current text height, so the bottom of the text is the second row of the text box
+			end
+			if nextTextHeight > self.next40 then
+				self.paused = true
+				self.next40 = self.next40 + 40
+			end
+			local thistextwidth, thistextheight, thistexttruncated = Graphics.drawTextInRect(self.currentText, 10, textYpos, 380, currentTextHeight, nil, '...')
 			Graphics.popContext()
 		end
 
+		-- make a copy of the text
 		local linecheckedtext = line["content"]
-		if(Graphics.getTextSize(linecheckedtext)>=372)then
-			local foundspace = 0
+		-- is the text longer than one line of the dialogue box?
+		local startspace = 0
+		while Graphics.getTextSize(linecheckedtext)>=372 do
+			-- set foundspace as zero
+			local foundspace = startspace
 			local previousspace = nil
+			-- loop until we break
 			while true do
+				-- get the locations of the first instance of a space after the last one (or start of the string)
    				foundspace = linecheckedtext:find(" ", foundspace+1)
+				-- if we found no more spaces then stop what we're doing
    				if foundspace==nil then
 					if(previousspace~=nil) then
 						linecheckedtext = replace_char(previousspace, linecheckedtext, "\n")
@@ -70,9 +122,12 @@ function createTextbox()
 					end
 					break
 				end
-   				if(Graphics.getTextSize(string.sub(linecheckedtext,0,foundspace))>=372)then
+				-- if the length of the string leading up to this space is longer than the length of a text box then
+   				if(Graphics.getTextSize(string.sub(linecheckedtext,startspace,foundspace))>=372)then
+					-- replace the PREVIOUS space we found with a line break IF we found a previous space.
 					if(previousspace~=nil) then
 						linecheckedtext = replace_char(previousspace, linecheckedtext, "\n")
+						startspace = previousspace
 						break
 					end
 				end
@@ -81,11 +136,14 @@ function createTextbox()
 		end
 		textbox.text = linecheckedtext
 		textbox:add()
+	else
+		if textbox~=nil then textbox:remove() end
 	end
-	if whobox ~= nil then whobox:remove() end
 	if line["whospeaking"]~=nil then
 		local whoboxlen = Graphics.getTextSize(line["whospeaking"]) + 10
-		whobox = Graphics.sprite.new()
+		if whobox == nil then
+			whobox = Graphics.sprite.new()
+		end
 		whobox:setSize(whoboxlen, 26)
 		whobox:setCenter(0,0)
 		whobox:moveTo(4, 170)
@@ -94,22 +152,26 @@ function createTextbox()
 		whobox.currentText = line["whospeaking"]
 		
 		function whobox:draw()
-			Graphics.pushContext()		
+			Graphics.pushContext()
+				-- draw the box				
 				Graphics.setColor(Graphics.kColorWhite)
 				Graphics.fillRoundRect(0,0,whoboxlen,26,4)
+				-- border
 				Graphics.setLineWidth(1)
 				Graphics.setColor(Graphics.kColorBlack)
 				Graphics.drawRoundRect(0,0,whoboxlen,26,4)
+				-- draw the text!
 				Graphics.drawTextInRect(self.currentText, 4, 4, whoboxlen, 20)
 			Graphics.popContext()
 		end
 		whobox.text = line["whospeaking"]
 		whobox:add()
+	else
+		if whobox ~= nil then whobox:remove() end
 	end
 	saveData("gdline", line["goto"])
 	line = deepcopy(db[line["goto"]])
 end
-
 
 function createDialogueMenu()
 	isinmenu = "yes"
@@ -129,7 +191,6 @@ function createDialogueMenu()
 	gridviewSprite:add()
 end
 
-
 function gridview:drawCell(section, row, column, selected, x, y, width, height)
     if selected then
         Graphics.fillRoundRect(x, y, width, height, 4)
@@ -141,22 +202,24 @@ function gridview:drawCell(section, row, column, selected, x, y, width, height)
     Graphics.drawTextInRect(contentoptions[row], x, y + (height/2 - fontHeight/2) + 2, width, height, nil, nil, kTextAlignment.center)
 end
 
-
-function doAnimations()
+function doAnimations()	
 	if splitbackground~=nil then
-		if backgroundSprite ~= nil then backgroundSprite:remove() end
 		currentbackground = mysplit(splitbackground[splitbackgroundcount],":")
 		if (tonumber(currentbackground[2]) < splitbackgroundframe and currentbackground[2]~="0") then
 			splitbackgroundcount = splitbackgroundcount + 1
 			splitbackgroundframe = 1
 			if splitbackground[splitbackgroundcount]==nil then splitbackgroundcount = 1 end
 			currentbackground = mysplit(splitbackground[splitbackgroundcount],":")
+			background = Graphics.image.new("assets/images/" .. currentbackground[1])
+			if backgroundSprite == nil then
+				backgroundSprite = Graphics.sprite.new(background)
+			else
+				backgroundSprite:setImage(background)
+			end
+			backgroundSprite:setCenter(0.5, 0)
+			backgroundSprite:moveTo(200, 0)
+			backgroundSprite:add()
 		end
-		background = Graphics.image.new("assets/images/" .. currentbackground[1])
-		backgroundSprite = Graphics.sprite.new(background)
-		backgroundSprite:setCenter(0.5, 0)
-		backgroundSprite:moveTo(200, 0)
-		backgroundSprite:add()
 		splitbackgroundframe = splitbackgroundframe + 1
 	end
 	if splitoverlay~=nil then
@@ -167,30 +230,33 @@ function doAnimations()
 			splitoverlayframe = 1
 			if splitoverlay[splitoverlaycount]==nil then splitoverlaycount = 1 end
 			currentoverlay = mysplit(splitoverlay[splitoverlaycount],":")
+			overlay = Graphics.image.new("assets/images/" .. currentoverlay[1])
+			overlaySprite = Graphics.sprite.new(overlay)
+			overlaySprite:setCenter(0, 0)
+			overlaySprite:moveTo(currentoverlay[2], currentoverlay[3])
+			overlaySprite:setZIndex(997)
+			overlaySprite:add()
 		end
-		overlay = Graphics.image.new("assets/images/" .. currentoverlay[1])
-		overlaySprite = Graphics.sprite.new(overlay)
-		overlaySprite:setCenter(0, 0)
-		overlaySprite:moveTo(currentoverlay[2], currentoverlay[3])
-		overlaySprite:setZIndex(997)
-		overlaySprite:add()
 		splitoverlayframe = splitoverlayframe + 1
 	end
 	if splitleftpeep~=nil then
-		if leftpeepSprite ~= nil then leftpeepSprite:remove() end
-		if textbox~=nil and textbox.typing and splitleftpeeptalking~=nil then
+		if textbox~=nil and textbox.typing and not textbox.paused and splitleftpeeptalking~=nil then
 			currentleftpeep = mysplit(splitleftpeeptalking[splitleftpeeptalkingcount],":")
 			if (tonumber(currentleftpeep[2]) < splitleftpeeptalkingframe and currentleftpeep[2]~="0") then
 				splitleftpeeptalkingcount = splitleftpeeptalkingcount + 1
 				splitleftpeeptalkingframe = 1
 				if splitleftpeeptalking[splitleftpeeptalkingcount]==nil then splitleftpeeptalkingcount = 1 end
 				currentleftpeep = mysplit(splitleftpeeptalking[splitleftpeeptalkingcount],":")
+				leftpeep = Graphics.image.new("assets/images/" .. currentleftpeep[1])
+				if leftpeepSprite == nil then
+					leftpeepSprite = Graphics.sprite.new(leftpeep)
+				else
+					leftpeepSprite:setImage(leftpeep)
+				end
+				leftpeepSprite:setCenter(0.5, 0)
+				leftpeepSprite:moveTo(leftpeepoffset, 0)
+				leftpeepSprite:add()
 			end
-			leftpeep = Graphics.image.new("assets/images/" .. currentleftpeep[1])
-			leftpeepSprite = Graphics.sprite.new(leftpeep)
-			leftpeepSprite:setCenter(0.5, 0)
-			leftpeepSprite:moveTo(leftpeepoffset, 0)
-			leftpeepSprite:add()
 			splitleftpeeptalkingframe = splitleftpeeptalkingframe + 1
 		else
 			currentleftpeep = mysplit(splitleftpeep[splitleftpeepcount],":")
@@ -199,30 +265,37 @@ function doAnimations()
 				splitleftpeepframe = 1
 				if splitleftpeep[splitleftpeepcount]==nil then splitleftpeepcount = 1 end
 				currentleftpeep = mysplit(splitleftpeep[splitleftpeepcount],":")
+				leftpeep = Graphics.image.new("assets/images/" .. currentleftpeep[1])
+				if leftpeepSprite == nil then
+					leftpeepSprite = Graphics.sprite.new(leftpeep)
+				else
+					leftpeepSprite:setImage(leftpeep)
+				end
+				leftpeepSprite:setCenter(0.5, 0)
+				leftpeepSprite:moveTo(leftpeepoffset, 0)
+				leftpeepSprite:add()
 			end
-			leftpeep = Graphics.image.new("assets/images/" .. currentleftpeep[1])
-			leftpeepSprite = Graphics.sprite.new(leftpeep)
-			leftpeepSprite:setCenter(0.5, 0)
-			leftpeepSprite:moveTo(leftpeepoffset, 0)
-			leftpeepSprite:add()
 			splitleftpeepframe = splitleftpeepframe + 1
 		end
 	end
 	if splitmiddlepeep~=nil then
-		if middlepeepSprite ~= nil then middlepeepSprite:remove() end
-		if textbox~=nil and textbox.typing and splitmiddlepeeptalking~=nil then
+		if textbox~=nil and textbox.typing and not textbox.paused and splitmiddlepeeptalking~=nil then
 			currentmiddlepeep = mysplit(splitmiddlepeeptalking[splitmiddlepeeptalkingcount],":")
 			if (tonumber(currentmiddlepeep[2]) < splitmiddlepeeptalkingframe and currentmiddlepeep[2]~="0") then
 				splitmiddlepeeptalkingcount = splitmiddlepeeptalkingcount + 1
 				splitmiddlepeeptalkingframe = 1
 				if splitmiddlepeeptalking[splitmiddlepeeptalkingcount]==nil then splitmiddlepeeptalkingcount = 1 end
 				currentmiddlepeep = mysplit(splitmiddlepeeptalking[splitmiddlepeeptalkingcount],":")
+				middlepeep = Graphics.image.new("assets/images/" .. currentmiddlepeep[1])
+				if middlepeepSprite == nil then
+					middlepeepSprite = Graphics.sprite.new(middlepeep)
+				else
+					middlepeepSprite:setImage(middlepeep)
+				end
+				middlepeepSprite:setCenter(0.5, 0)
+				middlepeepSprite:moveTo(middlepeepoffset, 0)
+				middlepeepSprite:add()
 			end
-			middlepeep = Graphics.image.new("assets/images/" .. currentmiddlepeep[1])
-			middlepeepSprite = Graphics.sprite.new(middlepeep)
-			middlepeepSprite:setCenter(0.5, 0)
-			middlepeepSprite:moveTo(middlepeepoffset, 0)
-			middlepeepSprite:add()
 			splitmiddlepeeptalkingframe = splitmiddlepeeptalkingframe + 1
 		else
 			currentmiddlepeep = mysplit(splitmiddlepeep[splitmiddlepeepcount],":")
@@ -231,30 +304,37 @@ function doAnimations()
 				splitmiddlepeepframe = 1
 				if splitmiddlepeep[splitmiddlepeepcount]==nil then splitmiddlepeepcount = 1 end
 				currentmiddlepeep = mysplit(splitmiddlepeep[splitmiddlepeepcount],":")
+				middlepeep = Graphics.image.new("assets/images/" .. currentmiddlepeep[1])
+				if middlepeepSprite == nil then
+					middlepeepSprite = Graphics.sprite.new(middlepeep)
+				else
+					middlepeepSprite:setImage(middlepeep)
+				end
+				middlepeepSprite:setCenter(0.5, 0)
+				middlepeepSprite:moveTo(middlepeepoffset, 0)
+				middlepeepSprite:add()
 			end
-			middlepeep = Graphics.image.new("assets/images/" .. currentmiddlepeep[1])
-			middlepeepSprite = Graphics.sprite.new(middlepeep)
-			middlepeepSprite:setCenter(0.5, 0)
-			middlepeepSprite:moveTo(middlepeepoffset, 0)
-			middlepeepSprite:add()
 			splitmiddlepeepframe = splitmiddlepeepframe + 1
 		end
 	end
 	if splitrightpeep~=nil then
-		if rightpeepSprite ~= nil then rightpeepSprite:remove() end
-		if textbox~=nil and textbox.typing and splitrightpeeptalking~=nil then
+		if textbox~=nil and textbox.typing and not textbox.paused and splitrightpeeptalking~=nil then
 			currentrightpeep = mysplit(splitrightpeeptalking[splitrightpeeptalkingcount],":")
 			if (tonumber(currentrightpeep[2]) < splitrightpeeptalkingframe and currentrightpeep[2]~="0")then
 				splitrightpeeptalkingcount = splitrightpeeptalkingcount + 1
 				splitrightpeeptalkingframe = 1
 				if splitrightpeeptalking[splitrightpeeptalkingcount]==nil then splitrightpeeptalkingcount = 1 end
 				currentrightpeep = mysplit(splitrightpeeptalking[splitrightpeeptalkingcount],":")
+				rightpeep = Graphics.image.new("assets/images/" .. currentrightpeep[1])
+				if rightpeepSprite == nil then
+					rightpeepSprite = Graphics.sprite.new(rightpeep)
+				else
+					rightpeepSprite:setImage(rightpeep)
+				end
+				rightpeepSprite:setCenter(0.5, 0)
+				rightpeepSprite:moveTo(rightpeepoffset, 0)
+				rightpeepSprite:add()	
 			end
-			rightpeep = Graphics.image.new("assets/images/" .. currentrightpeep[1])
-			rightpeepSprite = Graphics.sprite.new(rightpeep)
-			rightpeepSprite:setCenter(0.5, 0)
-			rightpeepSprite:moveTo(rightpeepoffset, 0)
-			rightpeepSprite:add()
 			splitrightpeeptalkingframe = splitrightpeeptalkingframe + 1
 		else
 			currentrightpeep = mysplit(splitrightpeep[splitrightpeepcount],":")
@@ -263,16 +343,20 @@ function doAnimations()
 				splitrightpeepframe = 1
 				if splitrightpeep[splitrightpeepcount]==nil then splitrightpeepcount = 1 end
 				currentrightpeep = mysplit(splitrightpeep[splitrightpeepcount],":")
+				rightpeep = Graphics.image.new("assets/images/" .. currentrightpeep[1])
+				if rightpeepSprite == nil then
+					rightpeepSprite = Graphics.sprite.new(rightpeep)
+				else
+					rightpeepSprite:setImage(rightpeep)
+				end
+				rightpeepSprite:setCenter(0.5, 0)
+				rightpeepSprite:moveTo(rightpeepoffset, 0)
+				rightpeepSprite:add()	
 			end
-			rightpeep = Graphics.image.new("assets/images/" .. currentrightpeep[1])
-			rightpeepSprite = Graphics.sprite.new(rightpeep)
-			rightpeepSprite:setCenter(0.5, 0)
-			rightpeepSprite:moveTo(rightpeepoffset, 0)
-			rightpeepSprite:add()
 			splitrightpeepframe = splitrightpeepframe + 1
 		end
 	end
-	local getwhichpeep = Noble.GameData.get("gdwhichpeep")
+	local getwhichpeep = savetemp["gdwhichpeep"]
 	if getwhichpeep == "left" then
 		if leftpeepSprite~=nil then leftpeepSprite:moveTo(leftpeepoffset,-10) end
 	elseif getwhichpeep == "middle" then
@@ -280,13 +364,13 @@ function doAnimations()
 	elseif getwhichpeep == "right" then
 		if rightpeepSprite~=nil then rightpeepSprite:moveTo(rightpeepoffset,-10) end
 	end
-	if(Noble.GameData.get("gdleftpeepflip")~=nil and Noble.GameData.get("gdleftpeepflip")~="") then
+	if(savetemp["gdleftpeepflip"]~=nil and savetemp["gdleftpeepflip"]~="") then
 		if leftpeepSprite~=nil then leftpeepSprite:setImageFlip("flipX") end
 	end
-	if(Noble.GameData.get("gdmiddlepeepflip")~=nil and Noble.GameData.get("gdmiddlepeepflip")~="") then
+	if(savetemp["gdmiddlepeepflip"]~=nil and savetemp["gdmiddlepeepflip"]~="") then
 		if middlepeepSprite~=nil then middlepeepSprite:setImageFlip("flipX") end
 	end
-	if(Noble.GameData.get("gdrightpeepflip")~=nil and Noble.GameData.get("gdrightpeepflip")~="") then
+	if(savetemp["gdrightpeepflip"]~=nil and savetemp["gdrightpeepflip"]~="") then
 		if rightpeepSprite~=nil then rightpeepSprite:setImageFlip("flipX") end
 	end
 end
@@ -296,15 +380,11 @@ function changeScene()
 	if line["duration"]~=nil then
 		thisduration = line["duration"]
 	end
-	print(thisscenename)
-	if(line["newscene"]~=nil) then
-		print('new scene')
+	if line["newscene"]~=nil then
 		PVNtoscene = line["newscene"]
 	else
-		print('same scene')
 		PVNtoscene = thisscenename
 	end
-	print(PVNtoscene)
 	if line["transition"] == "CUT" then
 		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.CUT)
 	elseif line["transition"] == "CROSS_DISSOLVE" then
@@ -326,14 +406,11 @@ function changeScene()
 	else
 		Noble.transition(_G[PVNtoscene], thisduration, Noble.TransitionType.DIP_TO_BLACK)
 	end
-	print("it wasn't that bit")
 end
-
 
 function dbBackgroundCheck(nosave)
     if line["background"]~=nil then
 		if nosave~="nosave" then saveData("gdbackground", line["background"]) end
-		if backgroundSprite~=nil then backgroundSprite:remove() end
 		splitbackground=nil
 		if string.find(line["background"],":") then
 			splitbackground = mysplit(line["background"],"|")
@@ -341,10 +418,18 @@ function dbBackgroundCheck(nosave)
 			splitbackgroundframe = 1
 			splitfirstbackground = mysplit(splitbackground[1],":")
 			background = Graphics.image.new("assets/images/" .. splitfirstbackground[1])
-			backgroundSprite = Graphics.sprite.new(background)
+			if backgroundSprite==nil then
+				backgroundSprite = Graphics.sprite.new(background)
+			else
+				backgroundSprite:setImage(background)
+			end
 		else
 			background = Graphics.image.new("assets/images/" .. line["background"])
-			backgroundSprite = Graphics.sprite.new(background)
+			if backgroundSprite==nil then
+				backgroundSprite = Graphics.sprite.new(background)
+			else
+				backgroundSprite:setImage(background)
+			end
 		end
 		backgroundSprite:setCenter(0, 0)
 		backgroundSprite:moveTo(0, 0)
@@ -352,32 +437,25 @@ function dbBackgroundCheck(nosave)
     end
 end
 
-
 function clearPeeps()
-	print("clearing peeps")
 	saveData("gdleftpeep", "")
 	saveData("gdmiddlepeep", "")
 	saveData("gdrightpeep", "")
 	if leftpeepSprite~=nil then 
-		print("clearing left peep")
 		leftpeepSprite:remove()	
 	end
 	if middlepeepSprite~=nil then 
-		print("clearing middle peep")
 		middlepeepSprite:remove()	
 	end
 	if rightpeepSprite~=nil then 
-		print("clearing right peep")
 		rightpeepSprite:remove() 
 	end
 end
-
 
 function clearDialogue()
 	if textbox ~= nil then textbox:remove() end
 	if whobox ~= nil then whobox:remove() end
 end
-
 
 function checkPeeps()
 	if line["leftpeepoffset"]~=nil then
@@ -395,20 +473,27 @@ function checkPeeps()
 		if line["leftpeep"]=="" then
 			if leftpeepSprite ~= nil then leftpeepSprite:remove() end
 		else
-			if leftpeepSprite ~= nil then leftpeepSprite:remove() end
 			if string.find(line["leftpeep"],":") then
 				splitleftpeep = mysplit(line["leftpeep"],"|")
 				splitleftpeepcount = 1
 				splitleftpeepframe = 1
 				splitfirstleftpeep = mysplit(splitleftpeep[1],":")
 				leftpeep = Graphics.image.new("assets/images/" .. splitfirstleftpeep[1])
-				leftpeepSprite = Graphics.sprite.new(leftpeep)
+				if leftpeepSprite == nil then 
+					leftpeepSprite = Graphics.sprite.new(leftpeep)
+				else
+					leftpeepSprite:setImage(leftpeep)
+				end
 			else
 				leftpeep = Graphics.image.new("assets/images/" .. line["leftpeep"])
-				leftpeepSprite = Graphics.sprite.new(leftpeep)
+				if leftpeepSprite ~= nil then 
+					leftpeepSprite = Graphics.sprite.new(leftpeep)
+				else
+					leftpeepSprite:setImage(leftpeep)
+				end
 			end
 			leftpeepSprite:setCenter(0, 0)
-			leftpeepSprite:moveTo(0, 0)
+			leftpeepSprite:moveTo(leftpeepoffset, 0)
 			leftpeepSprite:add()
 		end
 	end
@@ -418,20 +503,27 @@ function checkPeeps()
 		if line["middlepeep"]=="" then
 			if middlepeepSprite ~= nil then middlepeepSprite:remove() end
 		else
-			if middlepeepSprite ~= nil then middlepeepSprite:remove() end
 			if string.find(line["middlepeep"],":") then
 				splitmiddlepeep = mysplit(line["middlepeep"],"|")
 				splitmiddlepeepcount = 1
 				splitmiddlepeepframe = 1
 				splitfirstmiddlepeep = mysplit(splitmiddlepeep[1],":")
 				middlepeep = Graphics.image.new("assets/images/" .. splitfirstmiddlepeep[1])
-				middlepeepSprite = Graphics.sprite.new(middlepeep)
+				if middlepeepSprite == nil then
+					middlepeepSprite = Graphics.sprite.new(middlepeep)
+				else
+					middlepeepSprite:setImage(middlepeep)
+				end
 			else
 				middlepeep = Graphics.image.new("assets/images/" .. line["middlepeep"])
-				middlepeepSprite = Graphics.sprite.new(middlepeep)
+				if middlepeepSprite == nil then
+					middlepeepSprite = Graphics.sprite.new(middlepeep)
+				else
+					middlepeepSprite:setImage(middlepeep)
+				end
 			end
 			middlepeepSprite:setCenter(0.5, 0)
-			middlepeepSprite:moveTo(200, 0)
+			middlepeepSprite:moveTo(middlepeepoffset, 0)
 			middlepeepSprite:add()
 		end
 	end
@@ -441,20 +533,27 @@ function checkPeeps()
 		if line["rightpeep"]=="" then
 			if rightpeepSprite ~= nil then rightpeepSprite:remove() end
 		else
-			if rightpeepSprite ~= nil then rightpeepSprite:remove() end
 			if string.find(line["rightpeep"],":") then
 				splitrightpeep = mysplit(line["rightpeep"],"|")
 				splitrightpeepcount = 1
 				splitrightpeepframe = 1
 				splitfirstrightpeep = mysplit(splitrightpeep[1],":")
 				rightpeep = Graphics.image.new("assets/images/" .. splitfirstrightpeep[1])
-				rightpeepSprite = Graphics.sprite.new(rightpeep)
+				if rightpeepSprite ~= nil then
+					rightpeepSprite = Graphics.sprite.new(rightpeep)
+				else
+					rightpeepSprite:setImage(rightpeep)
+				end
 			else
 				rightpeep = Graphics.image.new("assets/images/" .. line["rightpeep"])
-				rightpeepSprite = Graphics.sprite.new(rightpeep)
+				if rightpeepSprite ~= nil then
+					rightpeepSprite = Graphics.sprite.new(rightpeep)
+				else
+					rightpeepSprite:setImage(rightpeep)
+				end
 			end
 			rightpeepSprite:setCenter(1, 0)
-			rightpeepSprite:moveTo(400, 0)
+			rightpeepSprite:moveTo(rightpeepoffset, 0)
 			rightpeepSprite:add()
 		end
 	end
@@ -478,17 +577,24 @@ function checkPeeps()
 	end
 	if line["whichpeep"]~=nil then
 		saveData("gdwhichpeep", line["whichpeep"])
-		if leftpeepSprite ~= nil then leftpeepSprite:moveTo(0,0) end
-		if middlepeepSprite ~= nil then middlepeepSprite:moveTo(200,0) end
-		if rightpeepSprite ~= nil then rightpeepSprite:moveTo(400,0) end
+		if leftpeepSprite ~= nil then leftpeepSprite:moveTo(leftpeepoffset,0) end
+		if middlepeepSprite ~= nil then 
+			middlepeepSprite:moveTo(middlepeepoffset,0) 
+		end
+		if rightpeepSprite ~= nil then rightpeepSprite:moveTo(rightpeepoffset,0) end
 		if line["whichpeep"] == "left" then
-			if leftpeepSprite~=nil then leftpeepSprite:moveTo(0,-10) end
+			if leftpeepSprite~=nil then leftpeepSprite:moveTo(leftpeepoffset,-10) end
 		elseif line["whichpeep"] == "middle" then
-			if middlepeepSprite~=nil then middlepeepSprite:moveTo(200,-10) end
+			if middlepeepSprite~=nil then 
+				middlepeepSprite:moveTo(middlepeepoffset,-10) 
+			end
 		elseif line["whichpeep"] == "right" then
-			if rightpeepSprite~=nil then rightpeepSprite:moveTo(400,-10) end
+			if rightpeepSprite~=nil then rightpeepSprite:moveTo(rightpeepoffset,-10) end
 		end
 	else
+		if leftpeepSprite~=nil then leftpeepSprite:moveTo(leftpeepoffset, 0) end
+		if middlepeepSprite~=nil then middlepeepSprite:moveTo(middlepeepoffset, 0) end
+		if rightpeepSprite~=nil then rightpeepSprite:moveTo(rightpeepoffset, 0) end
 		saveData("gdwhichpeep", "")
 	end
 	if line["leftpeepflip"]~=nil then
@@ -511,7 +617,6 @@ function checkPeeps()
 	end
 end
 
-
 function newsynth()
 	local s = snd.synth.new(snd.kWaveSawtooth)
 	s:setVolume(0.2)
@@ -522,14 +627,12 @@ function newsynth()
 	return s
 end
 
-
 function drumsynth(path, code)
 	local sample = snd.sample.new(path)
 	local s = snd.synth.new(sample)
 	s:setVolume(0.5)
 	return s
 end
-
 
 function newinst(n)
 	local inst = snd.instrument.new()
@@ -538,7 +641,6 @@ function newinst(n)
 	end
 	return inst
 end
-
 
 function druminst()
 	local inst = snd.instrument.new()
@@ -561,7 +663,6 @@ function druminst()
 	inst:addVoice(drumsynth("assets/drums/clav"), 75)
 	return inst
 end
-
 
 function soundCheck()
 	if line["bgm"]~=nil then
@@ -609,15 +710,14 @@ function soundCheck()
 	end
 end
 
-
 function cursorActivate()
 	cursoractive = "yes"
 	cursorSprite = Graphics.sprite.new(cursor)
 	cursorSprite:moveTo(cursorX, cursorY)
 	cursorSprite:setCollideRect(0, 0, cursorSprite:getSize())
+	cursorSprite:setZIndex(999)
 	cursorSprite:add()
 end
-
 
 function cursorRemove()
 	cursoractive = "no"
@@ -627,7 +727,6 @@ function cursorRemove()
 		cursorSprite:remove() 
 	end
 end
-
 
 function cursorMover()
 	if playdate.buttonIsPressed(playdate.kButtonUp) then
@@ -654,6 +753,7 @@ function cursorMover()
 	cursorSprite:setImage(cursor)
 	for _, locationspecs in ipairs(locations) do
 		sqr = mysplit(locationspecs,":")
+		sqr = replaceAllVariables(sqr)
 		areafound = gfx.sprite.querySpritesInRect(sqr[1],sqr[2],sqr[3],sqr[4])
 		for _, area in ipairs(areafound) do
 			cursorSprite:setImage(cursoron)
@@ -666,6 +766,7 @@ function cursorMover()
 end
 
 
+-- THIS IS ONLY USED FOR TESTING
 function dump(o)
 	if type(o) == 'table' then
 	   local s = '{ '
@@ -678,7 +779,7 @@ function dump(o)
 	   return tostring(o)
 	end
 end
-
+-- END
 
 function setVariables()
 	if line["setvariables"]~=nil then
@@ -687,10 +788,9 @@ function setVariables()
 			local thisoperation = mysplit(operation,":")
 			vnvariables[thisoperation[1]] = thisoperation[2]
 		end
-		saveData("gdvariables", vnvariables)
+		-- saveData("gdvariables", vnvariables)
 	end
 end
-
 
 function replaceVariable(haystack)
 	whilenum = 1
@@ -784,54 +884,94 @@ end
 
 function loadCheck()
 	if line['loadgame']~=nil then
-		if Noble.GameData.get("ldline")~="" then line = deepcopy(db[Noble.GameData.get("ldline")]) end
-		if Noble.GameData.get("ldbackground")~="" then line['background'] = Noble.GameData.get("ldbackground") end
-		if Noble.GameData.get("gdleftpeep")~="" then line['leftpeep'] = Noble.GameData.get("ldleftpeep") end
-		if Noble.GameData.get("gdmiddlepeep")~="" then line['middlepeep'] = Noble.GameData.get("ldmiddlepeep") end
-		if Noble.GameData.get("gdrightpeep")~="" then line['rightpeep'] = Noble.GameData.get("ldrightpeep") end
-		if Noble.GameData.get("gdwhichpeep")~="" then line['whichpeep'] = Noble.GameData.get("ldwhichpeep") end
-		if Noble.GameData.get("gdleftpeepflip")~="" then line['leftpeepflip'] = Noble.GameData.get("ldleftpeepflip") end
-		if Noble.GameData.get("gdmiddlepeepflip")~="" then line['middlepeepflip'] = Noble.GameData.get("ldmiddlepeepflip") end
-		if Noble.GameData.get("gdrightpeepflip")~="" then line['rightpeepflip'] = Noble.GameData.get("ldrightpeepflip") end
-		if Noble.GameData.get("ldbgm")~="" then line['bgm'] = Noble.GameData.get("ldbgm") end
-		if Noble.GameData.get("ldbgmidi")~="" then line['bgmidi'] = Noble.GameData.get("ldbgmidi") end
-		if Noble.GameData.get("ldsfx")~="" then line['sfx'] = Noble.GameData.get("ldsfx") end
-		if Noble.GameData.get("ldvariables")~="" then vnvariables = Noble.GameData.get("ldvariables") end
-		if Noble.GameData.get("ldoverlay")~="" then line['overlay'] = Noble.GameData.get("ldoverlay") end
+		if line["loadgame"] == "inventory" then 
+			dropOutOfInventoryCheck()
+		else
+			if Noble.GameData.get("ldline")~="" then line = deepcopy(db[Noble.GameData.get("ldline")]) end
+			if Noble.GameData.get("gdbackground")~="" then line['background'] = Noble.GameData.get("gdbackground") end
+			if Noble.GameData.get("gdleftpeep")~="" then line['leftpeep'] = Noble.GameData.get("gdleftpeep") end
+			if Noble.GameData.get("gdmiddlepeep")~="" then line['middlepeep'] = Noble.GameData.get("gdmiddlepeep") end
+			if Noble.GameData.get("gdrightpeep")~="" then line['rightpeep'] = Noble.GameData.get("gdrightpeep") end
+			if Noble.GameData.get("gdwhichpeep")~="" then line['whichpeep'] = Noble.GameData.get("gdwhichpeep") end
+			if Noble.GameData.get("gdleftpeepflip")~="" then line['leftpeepflip'] = Noble.GameData.get("gdleftpeepflip") end
+			if Noble.GameData.get("gdmiddlepeepflip")~="" then line['middlepeepflip'] = Noble.GameData.get("gdmiddlepeepflip") end
+			if Noble.GameData.get("gdrightpeepflip")~="" then line['rightpeepflip'] = Noble.GameData.get("gdrightpeepflip") end
+			if Noble.GameData.get("gdbgm")~="" then line['bgm'] = Noble.GameData.get("ldbgm") end
+			if Noble.GameData.get("gdbgmidi")~="" then line['bgmidi'] = Noble.GameData.get("ldbgmidi") end
+			if Noble.GameData.get("gdsfx")~="" then line['sfx'] = Noble.GameData.get("gdsfx") end
+			if Noble.GameData.get("gdvariables")~="" then vnvariables = Noble.GameData.get("ldvariables") end
+			if Noble.GameData.get("gdoverlay")~="" then line['overlay'] = Noble.GameData.get("gdoverlay") end
+			justloaded = "yes"
+			cursoractive = "no"
+			isinmenu = "no"
+		end
+	end
+end
+
+function dropOutOfInventoryCheck()
+	if line['loadgame']~=nil then
+		if savetemp["ldline"]~="" then line = deepcopy(db[savetemp["ldline"]]) end
+		if savetemp["gdbackground"]~="" then line['background'] = savetemp["gdbackground"] end
+		if savetemp["gdleftpeep"]~="" then line['leftpeep'] = savetemp["gdleftpeep"] end
+		if savetemp["gdmiddlepeep"]~="" then line['middlepeep'] = savetemp["gdmiddlepeep"] end
+		if savetemp["gdrightpeep"]~="" then line['rightpeep'] = savetemp["gdrightpeep"] end
+		if savetemp["gdwhichpeep"]~="" then line['whichpeep'] = savetemp["gdwhichpeep"] end
+		if savetemp["gdleftpeepflip"]~="" then line['leftpeepflip'] = savetemp["gdleftpeepflip"] end
+		if savetemp["gdmiddlepeepflip"]~="" then line['middlepeepflip'] = savetemp["gdmiddlepeepflip"] end
+		if savetemp["gdrightpeepflip"]~="" then line['rightpeepflip'] = savetemp["gdrightpeepflip"] end
+		if savetemp["gdbgm"]~="" then line['bgm'] = savetemp["gdbgm"] end
+		if savetemp["gdbgmidi"]~="" then line['bgmidi'] = savetemp["gdbgmidi"] end
+		if savetemp["gdsfx"]~="" then line['sfx'] = savetemp["gdsfx"] end
+		if savetemp["gdoverlay"]~="" then line['overlay'] = savetemp["gdoverlay"] end
 		justloaded = "yes"
 		cursoractive = "no"
 		isinmenu = "no"
-		print(dump(line))
 	end
 end
 
 function saveData(savevariable,data)
 	if nosave==nil then
-		Noble.GameData.set(savevariable, data)
+		savetemp[savevariable] = data
 	end
 end
 
 function saveLoadData()
-	Noble.GameData.set("ldline",Noble.GameData.get("gdline"))
-	Noble.GameData.set("ldbackground",Noble.GameData.get("gdbackground"))
-	Noble.GameData.set("ldleftpeep",Noble.GameData.get("gdleftpeep"))
-	Noble.GameData.set("ldmiddlepeep",Noble.GameData.get("gdmiddlepeep"))
-	Noble.GameData.set("ldrightpeep",Noble.GameData.get("gdrightpeep"))
-	Noble.GameData.set("ldwhichpeep",Noble.GameData.get("gdwhichpeep"))
-	Noble.GameData.set("ldleftpeepflip",Noble.GameData.get("gdleftpeepflip"))
-	Noble.GameData.set("ldmiddlepeepflip",Noble.GameData.get("gdmiddlepeepflip"))
-	Noble.GameData.set("ldrightpeepflip",Noble.GameData.get("gdrightpeepflip"))
-	Noble.GameData.set("ldbgm",Noble.GameData.get("gdbgm"))
-	Noble.GameData.set("ldbgmidi",Noble.GameData.get("gdbgmidi"))
-	Noble.GameData.set("ldsfx",Noble.GameData.get("gdsfx"))
-	Noble.GameData.set("ldvariables",Noble.GameData.get("gdvariables"))
-	Noble.GameData.set("ldoverlay",Noble.GameData.get("gdoverlay"))
+	if justloaded=="yes" then
+	else
+		savetemp["ldline"] = savetemp["gdline"]
+		savetemp["ldbackground"] = savetemp["gdbackground"]
+		savetemp["ldleftpeep"] = savetemp["gdleftpeep"]
+		savetemp["ldmiddlepeep"] = savetemp["gdmiddlepeep"]
+		savetemp["ldrightpeep"] = savetemp["gdrightpeep"]
+		savetemp["ldwhichpeep"] = savetemp["gdwhichpeep"]
+		savetemp["ldleftpeepflip"] = savetemp["gdleftpeepflip"]
+		savetemp["ldmiddlepeepflip"] = savetemp["gdmiddlepeepflip"]
+		savetemp["ldrightpeepflip"] = savetemp["gdrightpeepflip"]
+		savetemp["ldbgm"] = savetemp["gdbgm"]
+		savetemp["ldbgmidi"] = savetemp["gdbgmidi"]
+		savetemp["ldsfx"] = savetemp["gdsfx"]
+		savetemp["ldvariables"] = savetemp["gdvariables"]
+		savetemp["ldoverlay"] = savetemp["gdoverlay"]
+	end
 end
+
+function playdate.gameWillTerminate()
+	saveDataToDisk()
+end
+function playdate.deviceWillSleep()
+	saveDataToDisk()
+end
+function playdate.deviceWillLock()
+	saveDataToDisk()
+end
+
+function saveDataToDisk()
+	for key, value in pairs(savetemp) do Noble.GameData.set(key,value) end
+end
+
 
 function checkEventType()
 	if(line['loadgame'])~=nil then
-		print("LOADING")
-		print(dump(line))
 		loadCheck()
 	else
 		if disablebuttons==nil then
@@ -839,55 +979,67 @@ function checkEventType()
 				onPressB()
 			end
 			et = line["eventtype"]
-			if textbox~=nil and textbox.typing then
+			if textbox~=nil and textbox.typing and textbox.paused then
 				if playdate.buttonJustPressed(playdate.kButtonA) then
-					textbox.currentChar = 9999
+					textbox.paused = false
 				end
 			else
-				if et == "dialogue" then
-					if (playdate.buttonJustPressed(playdate.kButtonA) or playdate.buttonJustPressed(playdate.kButtonB) or justloaded == "yes") then
-						dialogueEvent()
+				if textbox~=nil and textbox.typing then
+					if playdate.buttonIsPressed(playdate.kButtonA) then
+						local maybeText = string.sub(textbox.text, 1, (textbox.currentChar + 6))
+						local maybeTextWidth, maybeTextHeight = Graphics.getTextSize(maybeText)
+						if maybeTextHeight < textbox.next40 then
+							textbox.currentChar = textbox.currentChar + 6
+						end 
 					end
-				elseif et == "menu" then
-					if (playdate.buttonJustPressed(playdate.kButtonA) or playdate.buttonJustPressed(playdate.kButtonB) or justloaded == "yes") then
-						noSaveCheck()
-						line = replaceAllVariables(line)
-						functionCheck()
-						overlayCheck()
-						cursorRemove()
-						soundCheck()
-						dbBackgroundCheck()
-						checkPeeps()
-						setVariables()
-						createDialogueMenu()
+				else
+					if et == "dialogue" then
+						if (playdate.buttonJustPressed(playdate.kButtonA) or playdate.buttonJustPressed(playdate.kButtonB) or justloaded == "yes") then
+							dialogueEvent()
+						end
+					elseif et == "menu" then
+						if (playdate.buttonJustPressed(playdate.kButtonA) or playdate.buttonJustPressed(playdate.kButtonB) or justloaded == "yes") then
+							if pressa ~= nil then pressa:remove() end
+							noSaveCheck()
+							line = replaceAllVariables(line)
+							functionCheck()
+							overlayCheck()
+							cursorRemove()
+							soundCheck()
+							dbBackgroundCheck()
+							checkPeeps()
+							setVariables()
+							createDialogueMenu()
+						end
+					elseif et == "scene" then	
+						if (playdate.buttonJustPressed(playdate.kButtonA) or playdate.buttonJustPressed(playdate.kButtonB) or justloaded == "yes") then
+							if pressa ~= nil then pressa:remove() end
+							noSaveCheck()
+							line = replaceAllVariables(line)
+							functionCheck()
+							overlayCheck()
+							cursorRemove()
+							setVariables()
+							changeScene()
+						end
+					elseif et == "inspect" then
+						if (playdate.buttonJustPressed(playdate.kButtonA) or playdate.buttonJustPressed(playdate.kButtonB) or justloaded == "yes") then
+							if pressa ~= nil then pressa:remove() end
+							noSaveCheck()
+							line = replaceAllVariables(line)
+							functionCheck()
+							overlayCheck()
+							cursorRemove()
+							soundCheck()
+							dbBackgroundCheck()
+							checkPeeps()
+							clearDialogue()
+							setVariables()
+							cursorActivate()
+						end
 					end
-				elseif et == "scene" then	
-					if (playdate.buttonJustPressed(playdate.kButtonA) or playdate.buttonJustPressed(playdate.kButtonB) or justloaded == "yes") then
-						noSaveCheck()
-						line = replaceAllVariables(line)
-						functionCheck()
-						overlayCheck()
-						cursorRemove()
-						setVariables()
-						changeScene()
-						print("what")
-					end
-				elseif et == "inspect" then
-					if (playdate.buttonJustPressed(playdate.kButtonA) or playdate.buttonJustPressed(playdate.kButtonB) or justloaded == "yes") then
-						noSaveCheck()
-						line = replaceAllVariables(line)
-						functionCheck()
-						overlayCheck()
-						cursorRemove()
-						soundCheck()
-						dbBackgroundCheck()
-						checkPeeps()
-						clearDialogue()
-						setVariables()
-						cursorActivate()
-					end
+					justloaded = ""
 				end
-				justloaded = ""
 			end
 		end
 	end
@@ -922,5 +1074,3 @@ function checkMenuStuff()
 		gridviewSprite:setZIndex(999)
 	end
 end
-
-
