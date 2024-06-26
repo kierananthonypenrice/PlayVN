@@ -492,7 +492,7 @@ function checkPeeps()
 					leftpeepSprite:setImage(leftpeep)
 				end
 			end
-			leftpeepSprite:setCenter(0, 0)
+			leftpeepSprite:setCenter(0.5, 0)
 			leftpeepSprite:moveTo(leftpeepoffset, 0)
 			leftpeepSprite:add()
 		end
@@ -539,7 +539,7 @@ function checkPeeps()
 				splitrightpeepframe = 1
 				splitfirstrightpeep = mysplit(splitrightpeep[1],":")
 				rightpeep = Graphics.image.new("assets/images/" .. splitfirstrightpeep[1])
-				if rightpeepSprite ~= nil then
+				if rightpeepSprite == nil then
 					rightpeepSprite = Graphics.sprite.new(rightpeep)
 				else
 					rightpeepSprite:setImage(rightpeep)
@@ -552,7 +552,7 @@ function checkPeeps()
 					rightpeepSprite:setImage(rightpeep)
 				end
 			end
-			rightpeepSprite:setCenter(1, 0)
+			rightpeepSprite:setCenter(0.5, 0)
 			rightpeepSprite:moveTo(rightpeepoffset, 0)
 			rightpeepSprite:add()
 		end
