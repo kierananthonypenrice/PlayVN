@@ -40,9 +40,9 @@ Noble.GameData.setup(
 	true
 )
 
-leftpeepoffset = 0		
+leftpeepoffset = 100		
 middlepeepoffset = 200		
-rightpeepoffset = 400
+rightpeepoffset = 300
 pressastate = 1
 savetemp = {}
 
